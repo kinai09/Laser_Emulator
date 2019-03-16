@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstring>
+#include "Laser.hpp"
 
 using namespace std;
 
@@ -18,9 +19,17 @@ int main()
 	sigaction(SIGTERM, &action, NULL);
 	sigaction(SIGINT, &action, NULL);
 	
+	
+	string request;
+	Laser laser;
+	
 	while(!applicationExit)
 	{
+		cout << "Enter Command: ";
+		getline(cin, request);
 		
+		laser.setRequest(request);	
+		cout << laser.getResponse();
 	}
 	
 	cout << "Application Terminated";
