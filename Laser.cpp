@@ -1,8 +1,6 @@
 #include "Laser.hpp"
-
 #include <iostream>
 using namespace std;
-
 
 Laser::Laser()
 {
@@ -13,6 +11,8 @@ Laser::Laser()
 	m_power = "0";
 	
 	m_isInSillyMode = false;
+	
+	
 	
 }
 
@@ -49,7 +49,7 @@ void Laser::setRequest(string request)
 	m_response = m_command;
 	
 	if (!isValidCommand())
-		m_response = m_response +  COMMAND_ERROR;
+		m_response = COMMAND_ERROR;
 }
 
 string Laser::getResponse()
@@ -66,7 +66,7 @@ void Laser::setResponse(string response)
 }
 
 bool Laser::isValidCommand()
-{
+{	
 	bool commandValid = false;
 	bool ret = false;
 	
@@ -109,7 +109,7 @@ bool Laser::isValidCommand()
 		m_isInSillyMode = false;
 		commandValid = ret = true;
 	}
-	
+
 	
 	if (!commandValid)
 		return false;
@@ -137,7 +137,7 @@ bool Laser::stopEmission()
 bool Laser::startEmission()
 {
 	if (!m_emissionStarted)
-	{
+	{	
 		m_emissionStarted = true;
 		m_power = "1";
 		return true;

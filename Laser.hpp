@@ -1,6 +1,7 @@
 #ifndef LASER_H
 #define LASER_H
 
+
 #include <string>
 #include <list>
 #include <algorithm>
@@ -59,7 +60,6 @@ class Laser
 		bool m_emissionStarted;
 		
 		bool m_isInSillyMode;
-		
 
 };
 
