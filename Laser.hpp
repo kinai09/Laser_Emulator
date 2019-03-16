@@ -15,6 +15,8 @@
 
 
 #define COMMAND_ERROR "UK!"
+#define COMMAND_SUCCESS "#"
+#define COMMAND_FAILURE "!"
 
 
 
@@ -33,11 +35,14 @@ class Laser
 		
 	private:
 	
+		bool startEmission();
 		bool isValidCommand();
 		
 		std::string m_request;
 		std::string m_response;
 		std::string m_command;
+		
+		bool m_emissionStarted;
 
 };
 

@@ -1,11 +1,14 @@
 #include "Laser.hpp"
 
+
 using namespace std;
 
 Laser::Laser()
 {
 	m_request = "";
 	m_response = "";
+	
+	m_emissionStarted = false;
 	
 }
 
@@ -28,8 +31,6 @@ void Laser::setRequest(string request)
 	
 	if (!isValidCommand())
 		m_response = m_response +  COMMAND_ERROR;
-	
-	
 }
 
 string Laser::getResponse()
@@ -47,22 +48,47 @@ void Laser::setResponse(string response)
 
 bool Laser::isValidCommand()
 {
+	bool commandValid = false;
+	bool ret = false;
+	
 	if (!m_command.compare(STR))
-		return true;
+	{
+		ret = startEmission();
+		commandValid = true;
+	}
 	if (!m_command.compare(STP))
-		return true;
+		commandValid = true;
 	if (!m_command.compare(ST))
-		return true;
+		commandValid = true;
 	if (!m_command.compare(KAL))
-		return true;
+		commandValid = true;
 	if (!m_command.compare(PW_GET))
-		return true;
+		commandValid = true;
 	if (!m_command.compare(PW_SET))
-		return true;
+		commandValid = true;
 	if (!m_command.compare(ESM))
-		return true;
+		commandValid = true;
 	if (!m_command.compare(DSM))
+		commandValid = true;
+	
+	if (ret) /** TODO NO RETURN **/
+		m_command += COMMAND_SUCCESS;
+	else
+		m_command += COMMAND_FAILURE;
+	
+	
+	m_response = m_command;
+	
+	return commandValid;
+}
+
+bool Laser::startEmission()
+{
+	if (!m_emissionStarted)
+	{
+		m_emissionStarted = true;
 		return true;
+	}
 	
 	return false;
 }
