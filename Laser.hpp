@@ -39,6 +39,7 @@ class Laser
 		bool startEmission();
 		bool stopEmission();
 		bool setPower();
+		void getPower();
 		
 		void getEmissionStatus();
 		
@@ -51,7 +52,7 @@ class Laser
 		std::string m_command;
 		std::string m_parameter;
 		
-		int m_power;
+		std::string m_power;
 		
 		bool m_emissionStarted;
 

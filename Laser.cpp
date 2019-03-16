@@ -10,7 +10,7 @@ Laser::Laser()
 	m_response = "";
 	
 	m_emissionStarted = false;
-	m_power = 0;
+	m_power = "0";
 	
 }
 
@@ -84,7 +84,10 @@ bool Laser::isValidCommand()
 	if (!m_command.compare(KAL))
 		commandValid = true;
 	if (!m_command.compare(PW_GET))
-		commandValid = true;
+	{
+		getPower();
+		commandValid = ret = true;
+	}
 	if (!m_command.compare(PW_SET))
 	{
 		ret = setPower();
@@ -113,7 +116,7 @@ bool Laser::stopEmission()
 	if (m_emissionStarted)
 	{
 		m_emissionStarted = false;
-		m_power = 0;
+		m_power = "0";
 		return true;
 	}
 	return false;
@@ -124,7 +127,7 @@ bool Laser::startEmission()
 	if (!m_emissionStarted)
 	{
 		m_emissionStarted = true;
-		m_power = 1;
+		m_power = "1";
 		return true;
 	}
 	return false;
@@ -148,8 +151,13 @@ bool Laser::setPower()
 	{
 		return false;
 	}
-	m_power = toInt(m_parameter);
+	m_power = m_parameter;
 	return true;
+}
+
+void Laser::getPower()
+{
+	m_response += "|" + m_power;
 }
 
 bool Laser::isValidParameter()
