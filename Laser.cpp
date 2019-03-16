@@ -159,11 +159,23 @@ void Laser::getEmissionStatus()
 
 bool Laser::setPower()
 {
+	/** If laser is emitting and parameter value is a valid integer **/
 	if (!isValidParameter() || !isEmitting())
+		return false;
+
+	/** save value of power before update **/
+	string originalPowerValue = m_power;
+	
+	/** update power value**/
+	m_power = m_parameter;
+	
+	/** if power value is outside [1-100], restore to previous valid value **/
+	if (!isPowerValueValid())
 	{
+		m_power = originalPowerValue;
 		return false;
 	}
-	m_power = m_parameter;
+	
 	return true;
 }
 
@@ -182,4 +194,13 @@ bool Laser::isValidParameter()
 bool Laser::isEmitting()
 {
 	return m_emissionStarted;
+}
+
+bool Laser::isPowerValueValid()
+{
+	int power = toInt(m_power);
+	
+	if (power>1 && power <=100)
+		return true;
+	return false;
 }

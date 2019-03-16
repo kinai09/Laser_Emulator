@@ -47,6 +47,7 @@ class Laser
 		bool isValidParameter();
 		
 		bool isEmitting();
+		bool isPowerValueValid();
 		
 		std::string m_request;
 		std::string m_response;
