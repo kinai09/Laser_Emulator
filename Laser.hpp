@@ -46,6 +46,8 @@ class Laser
 		bool isValidCommand();
 		bool isValidParameter();
 		
+		bool isEmitting();
+		
 		std::string m_request;
 		std::string m_response;
 		

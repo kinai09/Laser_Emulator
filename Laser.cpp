@@ -159,7 +159,7 @@ void Laser::getEmissionStatus()
 
 bool Laser::setPower()
 {
-	if (!isValidParameter())
+	if (!isValidParameter() || !isEmitting())
 	{
 		return false;
 	}
@@ -179,3 +179,7 @@ bool Laser::isValidParameter()
 }
 
 
+bool Laser::isEmitting()
+{
+	return m_emissionStarted;
+}
