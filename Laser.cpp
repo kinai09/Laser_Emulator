@@ -12,6 +12,8 @@ Laser::Laser()
 	m_emissionStarted = false;
 	m_power = "0";
 	
+	m_isInSillyMode = false;
+	
 }
 
 Laser::~Laser()
@@ -94,9 +96,15 @@ bool Laser::isValidCommand()
 		commandValid = true;
 	}
 	if (!m_command.compare(ESM))
-		commandValid = true;
+	{
+		m_isInSillyMode = true;
+		commandValid = ret = true;
+	}
 	if (!m_command.compare(DSM))
-		commandValid = true;
+	{
+		m_isInSillyMode = false;
+		commandValid = ret = true;
+	}
 	
 	
 	if (!commandValid)

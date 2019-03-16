@@ -53,8 +53,9 @@ class Laser
 		std::string m_parameter;
 		
 		std::string m_power;
-		
 		bool m_emissionStarted;
+		
+		bool m_isInSillyMode;
 
 };
 
