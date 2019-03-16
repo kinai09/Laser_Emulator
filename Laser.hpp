@@ -56,6 +56,7 @@ class Laser
 		bool m_emissionStarted;
 		
 		bool m_isInSillyMode;
+		
 
 };
 

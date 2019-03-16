@@ -30,6 +30,10 @@ static int toInt(string val)
 
 void Laser::setRequest(string request)
 {
+	if (m_isInSillyMode)
+	{
+		reverse(request.begin(), request.end());
+	}
 	/** Reset value **/
 	m_parameter = "";
 	m_command = request;
