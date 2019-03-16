@@ -1,7 +1,8 @@
 #include "Laser.hpp"
 
-
+#include <iostream>
 using namespace std;
+
 
 Laser::Laser()
 {
@@ -51,15 +52,23 @@ bool Laser::isValidCommand()
 	bool commandValid = false;
 	bool ret = false;
 	
+	m_response = m_command;
+	
 	if (!m_command.compare(STR))
 	{
 		ret = startEmission();
 		commandValid = true;
 	}
 	if (!m_command.compare(STP))
+	{
+		ret = stopEmission();
 		commandValid = true;
+	}
 	if (!m_command.compare(ST))
-		commandValid = true;
+	{
+		getEmissionStatus();
+		commandValid = ret = true;
+	}
 	if (!m_command.compare(KAL))
 		commandValid = true;
 	if (!m_command.compare(PW_GET))
@@ -71,15 +80,27 @@ bool Laser::isValidCommand()
 	if (!m_command.compare(DSM))
 		commandValid = true;
 	
+	
+	if (!commandValid)
+		return false;
+	
 	if (ret) /** TODO NO RETURN **/
-		m_command += COMMAND_SUCCESS;
+		m_response += COMMAND_SUCCESS;
 	else
-		m_command += COMMAND_FAILURE;
+		m_response += COMMAND_FAILURE;
 	
 	
-	m_response = m_command;
-	
-	return commandValid;
+	return true;
+}
+
+bool Laser::stopEmission()
+{
+	if (m_emissionStarted)
+	{
+		m_emissionStarted = false;
+		return true;
+	}
+	return false;
 }
 
 bool Laser::startEmission()
@@ -89,6 +110,17 @@ bool Laser::startEmission()
 		m_emissionStarted = true;
 		return true;
 	}
-	
 	return false;
+}
+
+void Laser::getEmissionStatus()
+{
+	string status;
+	
+	if (m_emissionStarted)
+		status = "|1";
+	else
+		status = "|0";
+	
+	m_response += status;
 }

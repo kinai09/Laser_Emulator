@@ -36,6 +36,10 @@ class Laser
 	private:
 	
 		bool startEmission();
+		bool stopEmission();
+		
+		void getEmissionStatus();
+		
 		bool isValidCommand();
 		
 		std::string m_request;

@@ -25,7 +25,7 @@ int main()
 	
 	while(!applicationExit)
 	{
-		cout << "Enter Command: ";
+		cout << "\nEnter Command: ";
 		getline(cin, request);
 		
 		laser.setRequest(request);	
