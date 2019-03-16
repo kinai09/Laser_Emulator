@@ -10,6 +10,7 @@ Laser::Laser()
 	m_response = "";
 	
 	m_emissionStarted = false;
+	m_power = 0;
 	
 }
 
@@ -17,16 +18,27 @@ Laser::~Laser()
 {
 }
 
-
+static int toInt(string val)
+{
+	std::string::size_type sz;   
+	int dec = std::stoi (val,&sz);
+	
+	return dec;
+}
 
 void Laser::setRequest(string request)
 {
-	
+	/** Reset value **/
+	m_parameter = "";
 	m_command = request;
 	
 	size_t pipePosition = request.find("|");
 	if ( pipePosition != string::npos)
+	{
 		m_command = request.substr(0, pipePosition);
+		m_parameter = request.substr(pipePosition+1, request.length()-pipePosition);
+		
+	}
 	
 	m_response = m_command;
 	
@@ -53,7 +65,7 @@ bool Laser::isValidCommand()
 	bool ret = false;
 	
 	m_response = m_command;
-	
+
 	if (!m_command.compare(STR))
 	{
 		ret = startEmission();
@@ -74,7 +86,10 @@ bool Laser::isValidCommand()
 	if (!m_command.compare(PW_GET))
 		commandValid = true;
 	if (!m_command.compare(PW_SET))
+	{
+		ret = setPower();
 		commandValid = true;
+	}
 	if (!m_command.compare(ESM))
 		commandValid = true;
 	if (!m_command.compare(DSM))
@@ -98,6 +113,7 @@ bool Laser::stopEmission()
 	if (m_emissionStarted)
 	{
 		m_emissionStarted = false;
+		m_power = 0;
 		return true;
 	}
 	return false;
@@ -108,6 +124,7 @@ bool Laser::startEmission()
 	if (!m_emissionStarted)
 	{
 		m_emissionStarted = true;
+		m_power = 1;
 		return true;
 	}
 	return false;
@@ -124,3 +141,21 @@ void Laser::getEmissionStatus()
 	
 	m_response += status;
 }
+
+bool Laser::setPower()
+{
+	if (!isValidParameter())
+	{
+		return false;
+	}
+	m_power = toInt(m_parameter);
+	return true;
+}
+
+bool Laser::isValidParameter()
+{
+	 return !m_parameter.empty() && std::find_if(m_parameter.begin(), 
+        m_parameter.end(), [](char c) { return !std::isdigit(c); }) == m_parameter.end();
+}
+
+

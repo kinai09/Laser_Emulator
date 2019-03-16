@@ -3,6 +3,7 @@
 
 #include <string>
 #include <list>
+#include <algorithm>
 
 #define STR "STR"
 #define STP (string)"STP"
@@ -37,14 +38,20 @@ class Laser
 	
 		bool startEmission();
 		bool stopEmission();
+		bool setPower();
 		
 		void getEmissionStatus();
 		
 		bool isValidCommand();
+		bool isValidParameter();
 		
 		std::string m_request;
 		std::string m_response;
+		
 		std::string m_command;
+		std::string m_parameter;
+		
+		int m_power;
 		
 		bool m_emissionStarted;
 
