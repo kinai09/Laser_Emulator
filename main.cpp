@@ -4,8 +4,11 @@
 
 using namespace std;
 
+/** Flag for application termination **/
 volatile sig_atomic_t applicationExit = false;
 
+
+/** Terminates the application after receiving interrupts **/
 void terminateProgram(int signum)
 {
 	applicationExit = true;
@@ -13,16 +16,18 @@ void terminateProgram(int signum)
 
 int main()
 {
+	string request;
+	Laser laser;
+	
+	/** Setup function to cath sigint and sigterm **/
 	struct sigaction action;
 	memset(&action, 0, sizeof(struct sigaction));
 	action.sa_handler = terminateProgram;
 	sigaction(SIGTERM, &action, NULL);
 	sigaction(SIGINT, &action, NULL);
 	
-	
-	string request;
-	Laser laser;
-	
+
+	/** ask user for input until terminated **/
 	while(!applicationExit)
 	{
 		cout << "\nEnter Command: ";
@@ -32,8 +37,6 @@ int main()
 		cout << laser.getResponse();
 	}
 	
-	cout << "Application Terminated";
-	
-	
+	cout << "\n\nApplication Terminated";
     return 0;
 }

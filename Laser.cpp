@@ -1,25 +1,9 @@
 #include "Laser.hpp"
 #include <iostream>
+
 using namespace std;
 
-Laser::Laser()
-{
-	m_request = "";
-	m_response = "";
-	
-	m_emissionStarted = false;
-	m_power = "0";
-	
-	m_isInSillyMode = false;
-	
-	
-	
-}
-
-Laser::~Laser()
-{
-}
-
+/** Converts string to integer **/
 static int toInt(string val)
 {
 	std::string::size_type sz;   
@@ -28,27 +12,44 @@ static int toInt(string val)
 	return dec;
 }
 
+
+Laser::Laser()
+{
+	m_response = "";
+	m_power = "0";
+	
+	m_emissionStarted = false;
+	m_isInSillyMode = false;
+}
+
+Laser::~Laser()
+{
+}
+
 void Laser::setRequest(string request)
 {
 	if (m_isInSillyMode)
 	{
 		reverse(request.begin(), request.end());
 	}
+	
 	/** Reset value **/
 	m_parameter = "";
 	m_command = request;
 	
+	/** Get command and parameter **/
 	size_t pipePosition = request.find("|");
 	if ( pipePosition != string::npos)
 	{
 		m_command = request.substr(0, pipePosition);
 		m_parameter = request.substr(pipePosition+1, request.length()-pipePosition);
-		
 	}
 	
+	/** Update response **/
 	m_response = m_command;
 	
-	if (!isValidCommand())
+	/** Process command **/
+	if (!processCommand())
 		m_response = COMMAND_ERROR;
 }
 
@@ -57,15 +58,7 @@ string Laser::getResponse()
 	return m_response;
 }
 
-void Laser::processRequest()
-{
-}
-
-void Laser::setResponse(string response)
-{
-}
-
-bool Laser::isValidCommand()
+bool Laser::processCommand()
 {	
 	bool commandValid = false;
 	bool ret = false;
@@ -110,22 +103,21 @@ bool Laser::isValidCommand()
 		commandValid = ret = true;
 	}
 
-	
 	if (!commandValid)
 		return false;
 	
-	if (ret) /** TODO NO RETURN **/
+	/** Append processing result only if command is valid **/
+	if (ret)
 		m_response += COMMAND_SUCCESS;
 	else
 		m_response += COMMAND_FAILURE;
-	
 	
 	return true;
 }
 
 bool Laser::stopEmission()
 {
-	if (m_emissionStarted)
+	if (isEmitting())
 	{
 		m_emissionStarted = false;
 		m_power = "0";
@@ -136,7 +128,7 @@ bool Laser::stopEmission()
 
 bool Laser::startEmission()
 {
-	if (!m_emissionStarted)
+	if (!isEmitting())
 	{	
 		m_emissionStarted = true;
 		m_power = "1";
@@ -160,7 +152,7 @@ void Laser::getEmissionStatus()
 bool Laser::setPower()
 {
 	/** If laser is emitting and parameter value is a valid integer **/
-	if (!isValidParameter() || !isEmitting())
+	if (!isParameterValid() || !isEmitting())
 		return false;
 
 	/** save value of power before update **/
@@ -184,12 +176,11 @@ void Laser::getPower()
 	m_response += "|" + m_power;
 }
 
-bool Laser::isValidParameter()
+bool Laser::isParameterValid()
 {
 	 return !m_parameter.empty() && std::find_if(m_parameter.begin(), 
         m_parameter.end(), [](char c) { return !std::isdigit(c); }) == m_parameter.end();
 }
-
 
 bool Laser::isEmitting()
 {
@@ -202,5 +193,6 @@ bool Laser::isPowerValueValid()
 	
 	if (power>1 && power <=100)
 		return true;
+	
 	return false;
 }
