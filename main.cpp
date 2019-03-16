@@ -16,6 +16,7 @@ int main()
 	memset(&action, 0, sizeof(struct sigaction));
 	action.sa_handler = terminateProgram;
 	sigaction(SIGTERM, &action, NULL);
+	sigaction(SIGINT, &action, NULL);
 	
 	while(!applicationExit)
 	{
