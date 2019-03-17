@@ -5,6 +5,10 @@
 #include <list>
 #include <algorithm>
 
+#include <thread>
+#include <chrono>
+#include <future>
+
 #define STR     "STR"
 #define STP     "STP"
 #define ST      "ST?"
@@ -25,12 +29,8 @@ class Laser
     public:
         Laser();
         ~Laser();
-		
-		/** Sets request from user **/
-		void setRequest(std::string request);
-		
-		/** Returns result of emulator for processing commands **/
-		std::string getResponse();
+			
+		void listenForCommands();
 		
 	private:			
 		
@@ -61,6 +61,13 @@ class Laser
 		/** Checks if power value is within range [1, 100] **/
 		bool isPowerValueValid();
 		
+		void timeoutCallback(std::future<void> futureObj);
+		
+		/** Sets request from user **/
+		void setRequest(std::string request);
+		
+		/** Returns result of emulator for processing commands **/
+		std::string getResponse();
 		
 	private:
 		std::string m_response;
@@ -70,7 +77,8 @@ class Laser
 		
 		bool m_emissionStarted;
 		bool m_isInSillyMode;
-
+		
+		struct sigaction action;
 };
 
 #endif // LASER_H

@@ -1,7 +1,18 @@
 #include "Laser.hpp"
 #include <iostream>
+#include <cstring>
+
 
 using namespace std;
+
+/** Flag for application termination **/
+volatile sig_atomic_t applicationExit = false;
+
+/** Terminates the application after receiving interrupts **/
+void terminateProgram(int signum)
+{
+	applicationExit = true;
+}
 
 /** Converts string to integer **/
 static int toInt(string val)
@@ -11,7 +22,6 @@ static int toInt(string val)
 	
 	return dec;
 }
-
 
 Laser::Laser()
 {
@@ -24,6 +34,39 @@ Laser::Laser()
 
 Laser::~Laser()
 {
+}
+
+void Laser::listenForCommands()
+{
+	string request; 
+	
+	/** Setup function to cath sigint and sigterm **/
+	memset(&action, 0, sizeof(struct sigaction));
+	action.sa_handler = terminateProgram;
+	sigaction(SIGTERM, &action, NULL);
+	sigaction(SIGINT, &action, NULL);
+	
+	while(!applicationExit)
+	{
+		/** Start Timer **/
+		std::promise<void> exitSignal;
+		std::future<void> futureObj = exitSignal.get_future();
+		std::thread th(&Laser::timeoutCallback, this, std::move(futureObj));
+		
+		/** Get command **/
+		cout << "\nEnter Command: ";
+		getline(cin, request);
+		
+		if (!applicationExit)
+		{
+			this->setRequest(request);	
+			cout << this->getResponse();
+		}
+		
+		/** End thread or Reset timer **/
+		exitSignal.set_value();
+		th.join();
+	}
 }
 
 void Laser::setRequest(string request)
@@ -81,7 +124,7 @@ bool Laser::processCommand()
 		commandValid = ret = true;
 	}
 	if (!m_command.compare(KAL))
-		commandValid = true;
+		commandValid = ret = true;
 	if (!m_command.compare(PW_GET))
 	{
 		getPower();
@@ -195,4 +238,20 @@ bool Laser::isPowerValueValid()
 		return true;
 	
 	return false;
+}
+
+void Laser::timeoutCallback(std::future<void> futureObj)
+{
+	auto start = std::chrono::steady_clock::now();
+	
+	/** WHILE PROMISE HAS NOT BEEN RECEIVED **/
+	while(futureObj.wait_for(std::chrono::milliseconds(1)) == std::future_status::timeout)
+	{
+		 /** If no commands have been issued after 5 seconds **/
+		 if (chrono::duration_cast<chrono::seconds>(std::chrono::steady_clock::now() - start).count() >= 5)
+		 {
+			 this->stopEmission();
+			 start = std::chrono::steady_clock::now();
+		 }
+	}
 }
